@@ -1,5 +1,12 @@
 # Private Key Export AES-256-CBC
-Sort sketch how a AES-256 it CBC key export can look like. 
+Sort sketch how a AES-256 it CBC key export can look like.
+
+You can also change the mode to GCM. However, it seems like openSSL runs into trouble deciphering the encrypted key in that case.
+
+```java
+PEMEncryptor encryptor = new JcePEMEncryptorBuilder("AES-256-GCM").build(password.toCharArray());
+                                                             ^^^
+``` 
 
 # Usage
 
@@ -17,5 +24,6 @@ Enter your choosen password.
 
 * Find a way to set interation count up to 100000
 * Find a way to set salt and iv
+
 
 
