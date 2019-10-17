@@ -1,25 +1,23 @@
 package com.example.bc.key.export;
 
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.crypto.params.RSAKeyParameters;
+import org.bouncycastle.crypto.util.PrivateKeyFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMDecryptorProvider;
-import org.bouncycastle.openssl.PEMEncryptedKeyPair;
 import org.bouncycastle.openssl.PEMParser;
-import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
-import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
+import org.bouncycastle.openssl.jcajce.JceOpenSSLPKCS8DecryptorProviderBuilder;
+import org.bouncycastle.operator.InputDecryptorProvider;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo;
+import org.bouncycastle.pkcs.PKCSException;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
 import java.security.Security;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.RSAPrivateCrtKeySpec;
-import java.security.spec.RSAPrivateKeySpec;
 
 public class ImportPrivateKey {
 
-    public static void main(String[] args) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException {
+    public static void main(String[] args) throws Exception {
         Security.addProvider(new BouncyCastleProvider());
 
         if (args.length != 2) {
@@ -27,23 +25,17 @@ public class ImportPrivateKey {
             return;
         }
 
-        RSAPrivateKeySpec privateKeySpec = readPem(args[0], args[1]);
-        System.out.println("private key [exponent d=" + privateKeySpec.getPrivateExponent());
+        PrivateKeyInfo privateKeyInfo = readPem(args[0], args[1]);
+        RSAKeyParameters key = (RSAKeyParameters) PrivateKeyFactory.createKey(privateKeyInfo);
+        System.out.println("private key [exponent d=" + key.getExponent());
     }
 
-    private static RSAPrivateKeySpec readPem(String keyfileName, String password) throws InvalidKeySpecException, IOException, NoSuchAlgorithmException {
+    private static PrivateKeyInfo readPem(String keyfileName, String password) throws IOException, OperatorCreationException, PKCSException {
         // Loads a privte key from the specified key file name
         final PEMParser pemParser = new PEMParser(new FileReader(keyfileName));
-        final Object object = pemParser.readObject();
-        JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
-        // Encrypted key - we will use provided password
-        PEMEncryptedKeyPair ckp = (PEMEncryptedKeyPair) object;
-        PEMDecryptorProvider decProv = new JcePEMDecryptorProviderBuilder().build(password.toCharArray());
-        KeyPair kp = converter.getKeyPair(ckp.decryptKeyPair(decProv));
-        // RSA
-        KeyFactory keyFac = KeyFactory.getInstance("RSA");
-        RSAPrivateCrtKeySpec privateKey = keyFac.getKeySpec(kp.getPrivate(), RSAPrivateCrtKeySpec.class);
-
-        return privateKey;
+        PKCS8EncryptedPrivateKeyInfo pair = (PKCS8EncryptedPrivateKeyInfo) pemParser.readObject();
+        JceOpenSSLPKCS8DecryptorProviderBuilder jce = new JceOpenSSLPKCS8DecryptorProviderBuilder();
+        InputDecryptorProvider decProv = jce.build(password.toCharArray());
+        return pair.decryptPrivateKeyInfo(decProv);
     }
 }

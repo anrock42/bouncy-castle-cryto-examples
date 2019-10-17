@@ -1,18 +1,23 @@
 package com.example.bc.key.export;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+
+import java.io.IOException;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 
 public class RSAKeyFactory {
 
-    public static KeyPair generate() {
-        try {
-            return generateRSAKeyPair();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public static PrivateKeyInfo generatePrivateKeyPKCS8() throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+        KeyPair pair = generateRSAKeyPair();
+
+        KeyFactory factory = KeyFactory.getInstance("RSA", "BC");
+        PrivateKey privateKey = factory.generatePrivate(new PKCS8EncodedKeySpec(pair.getPrivate().getEncoded()));
+
+        ASN1InputStream asn1input = new ASN1InputStream(privateKey.getEncoded());
+        return PrivateKeyInfo.getInstance(asn1input.readObject());
     }
 
     private static KeyPair generateRSAKeyPair() throws NoSuchAlgorithmException, NoSuchProviderException {
