@@ -61,7 +61,7 @@ public class ExportPrivateKey {
     }
 
     private static AlgorithmIdentifier hmacWithSHA512() {
-        return new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA512, DERNull.INSTANCE);
+        return new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA256, DERNull.INSTANCE);
     }
 
     private static void toFile(String filename, String content) throws IOException {
