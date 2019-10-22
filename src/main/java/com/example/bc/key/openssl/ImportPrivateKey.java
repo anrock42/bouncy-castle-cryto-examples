@@ -1,4 +1,4 @@
-package com.example.bc.key.export;
+package com.example.bc.key.openssl;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.crypto.params.RSAKeyParameters;

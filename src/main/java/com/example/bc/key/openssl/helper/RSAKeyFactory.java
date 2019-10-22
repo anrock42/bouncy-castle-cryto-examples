@@ -1,4 +1,4 @@
-package com.example.bc.key.export;
+package com.example.bc.key.openssl.helper;
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;

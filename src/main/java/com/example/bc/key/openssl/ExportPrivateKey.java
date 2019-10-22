@@ -1,5 +1,6 @@
-package com.example.bc.key.export;
+package com.example.bc.key.openssl;
 
+import com.example.bc.key.openssl.helper.RSAKeyFactory;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;

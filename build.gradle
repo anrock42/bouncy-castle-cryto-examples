@@ -17,6 +17,7 @@ dependencies {
     compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.63'
     // https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on
     compile group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.63'
-
+    // https://mvnrepository.com/artifact/org.bouncycastle/bcpg-jdk15on
+    compile group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: '1.64'
 
 }
