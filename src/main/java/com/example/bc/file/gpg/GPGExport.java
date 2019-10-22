@@ -40,12 +40,12 @@ public class GPGExport {
         try {
             byte[] compressedData = compressFile(fileName, CompressionAlgorithmTags.ZIP);
 
-            PGPEncryptedDataGenerator encGen = new PGPEncryptedDataGenerator(new JcePGPDataEncryptorBuilder(PGPEncryptedData.CAST5)
+            PGPEncryptedDataGenerator encGen = new PGPEncryptedDataGenerator(new JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256)
                     .setWithIntegrityPacket(withIntegrityCheck)
                     .setSecureRandom(new SecureRandom())
                     .setProvider("BC"));
 
-            encGen.addMethod(new JcePBEKeyEncryptionMethodGenerator(passPhrase)
+            encGen.addMethod(new JcePBEKeyEncryptionMethodGenerator(passPhrase, 255)
                     .setProvider("BC"));
 
             OutputStream encOut = encGen.open(out, compressedData.length);
