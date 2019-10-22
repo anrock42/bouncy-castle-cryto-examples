@@ -58,3 +58,77 @@ This will print the ASN.1 structure and interpret the hex values. Have a look at
 We can see that **PBKDF2** is used as well as **HMACS with SHA-512** to derive the aes key. The hex value `0x0186A0` translates to our 100000 number of iterations.
 Further, we can verify that AES-256 bit in CBC mode is used. 
 
+# File Export
+
+Most user friendly and secure way to migrate files from one system to another might be GPG (GNU Privacy Guard).
+In the default configuration it uses some rounds of SHA-1 to derive a key from a given password. To improve this the following configuration was set:
+
+* Encryption: AES-CFB-256 
+  * CFB (Cipher Feedback Mode) is the only supported algorithm in GPG and is considered save ([NIST Recommendation for Block Cipher Modes](https://csrc.nist.gov/publications/detail/sp/800-38a/final)).  Since each block is XORed with the previous block a parallel processing is not possible.
+* Key Derivation: 65011712 rounds of SHA-256    
+  * SHA-256 with 65011712 (0xFF) iterations
+  * Default is SHA-1 with 0x60 iterations.
+  * Hash is salted using `SecureRandom`
+  
+# Usage
+
+Run the `GPGExport` with specifing an input file and a password as arguments.
+It produces a file in the same directory called `<YOUR_FILE>.gpg`. This file can be opened by GPGSuite (for Mac) or gpg4win in windows. 
+
+## Inspecting Header of .gpg files
+
+The used parameters can be verified by using the gpg commandline tools:
+
+```
+> gpg --list-packets key.pem.gpg 
+gpg: keyserver option 'ca-cert-file' is obsolete; please use 'hkp-cacert' in dirmngr.conf
+gpg: AES256 encrypted data
+gpg: encrypted with 1 passphrase
+# off=0 ctb=8c tag=3 hlen=2 plen=13
+:symkey enc packet: version 4, cipher 9, s2k 3, hash 8
+        salt C4098A18FCB0798E, count 65011712 (255)
+# off=15 ctb=d2 tag=18 hlen=3 plen=2710 new-ctb
+:encrypted data packet:
+        length: 2710
+        mdc_method: 2
+# off=37 ctb=a3 tag=8 hlen=1 plen=0 indeterminate
+:compressed packet: algo=1
+# off=39 ctb=cb tag=11 hlen=3 plen=3484 new-ctb
+:literal data packet:
+        mode b (62), created 1571314317, name="key.pem",
+        raw data: 3471 bytes
+expr: syntax error
+[: Missing argument at index 2
+```
+
+S2K:
+* 3 - Version 3 using salt and iterations
+
+Hash:
+* 1: MD5
+* 2: SHA1
+* 3: RIPEMD160
+* 4: DOUBLE_SHA
+* 5: MD2
+* 6: TIGER_192
+* 7: HAVAL_5_160
+* **8: SHA256**
+* 9: SHA384
+* 10: SHA512
+* 11: SHA224
+
+Algorithm:
+* 0: NULL
+* 1: IDEA
+* 2: TRIPLE_DES
+* 3: CAST5
+* 4: BLOWFISH
+* 5: SAFER
+* 6: DES
+* 7: AES_128
+* **8: AES_192**
+* 9: AES_256
+* 10: TWOFISH
+* 11: CAMELLIA_128
+* 12: CAMELLIA_192
+* 13: CAMELLIA_256

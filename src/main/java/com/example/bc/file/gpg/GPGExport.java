@@ -1,5 +1,6 @@
 package com.example.bc.file.gpg;
 
+import com.example.bc.file.gpg.digest.SHA256PGPDigestCalculator;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.CompressionAlgorithmTags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -45,7 +46,7 @@ public class GPGExport {
                     .setSecureRandom(new SecureRandom())
                     .setProvider("BC"));
 
-            encGen.addMethod(new JcePBEKeyEncryptionMethodGenerator(passPhrase, 255)
+            encGen.addMethod(new JcePBEKeyEncryptionMethodGenerator(passPhrase, new SHA256PGPDigestCalculator(), 0xFF)
                     .setProvider("BC"));
 
             OutputStream encOut = encGen.open(out, compressedData.length);
