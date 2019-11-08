@@ -11,6 +11,9 @@ import java.io.*;
 import java.security.NoSuchProviderException;
 import java.security.Security;
 
+/**
+ * Stolen from: https://github.com/bcgit/bc-java/blob/master/pg/src/main/java/org/bouncycastle/openpgp/examples/PBEFileProcessor.java
+ */
 public class GPGImport {
 
     public static void main(String[] args) throws IOException, NoSuchProviderException, PGPException {
